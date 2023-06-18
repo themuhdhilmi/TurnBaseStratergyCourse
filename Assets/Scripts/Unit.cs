@@ -11,10 +11,18 @@ public class Unit : MonoBehaviour
     [SerializeField] Animator unitAnimator;
     private Vector3 targetPosition;
 
+    private GridPosition gridPosition;
+
     // Start is called before the first frame update
     private void Awake()
     {
         targetPosition = transform.position;
+    }
+
+    private void Start()
+    {
+        gridPosition = LevelGrid.instance.GetGridPosition(transform.position);
+        LevelGrid.instance.AddUnitAtGridPosition(gridPosition, this);
     }
 
     // Update is called once per frame
@@ -38,6 +46,14 @@ public class Unit : MonoBehaviour
         else
         {
             unitAnimator.SetBool("isWalking", false);
+        }
+
+        GridPosition newgridPosition = LevelGrid.instance.GetGridPosition(transform.position);
+
+        if(newgridPosition != gridPosition)
+        {
+            LevelGrid.instance.UnitMovedGridPosition(this, gridPosition, newgridPosition);
+            gridPosition = LevelGrid.instance.GetGridPosition(transform.position);
         }
     }
 
