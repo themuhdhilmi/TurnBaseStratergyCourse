@@ -4,23 +4,28 @@ using UnityEngine;
 
 public class LevelGrid : MonoBehaviour
 {
-    public static LevelGrid instance { get; private set; }
+
+    public static LevelGrid Instance { get; private set; }
+
+
+
+    [SerializeField] private Transform gridDebugObjectPrefab;
 
     private GridSystem gridSystem;
-    [SerializeField] private Transform gridDebugObjectPrefabs;
+
 
     private void Awake()
     {
-        if (instance != null)
+        if (Instance != null)
         {
-            Debug.LogError("There's more than one LevelGrid!");
+            Debug.LogError("There's more than one LevelGrid! " + transform + " - " + Instance);
             Destroy(gameObject);
             return;
         }
-        instance = this;
+        Instance = this;
 
         gridSystem = new GridSystem(10, 10, 2f);
-        gridSystem.CreateDebugObjects(gridDebugObjectPrefabs);
+        gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
     }
 
     public void AddUnitAtGridPosition(GridPosition gridPosition, Unit unit)
@@ -41,16 +46,27 @@ public class LevelGrid : MonoBehaviour
         gridObject.RemoveUnit(unit);
     }
 
-    void Update()
-    {
-        //Debug.Log(gridSystem.GetGridPosition(MouseWorld.GetPosition()));
-    }
-
     public void UnitMovedGridPosition(Unit unit, GridPosition fromGridPosition, GridPosition toGridPosition)
     {
         RemoveUnitAtGridPosition(fromGridPosition, unit);
+
         AddUnitAtGridPosition(toGridPosition, unit);
     }
 
     public GridPosition GetGridPosition(Vector3 worldPosition) => gridSystem.GetGridPosition(worldPosition);
+
+    public Vector3 GetWorldPosition(GridPosition gridPosition) => gridSystem.GetWorldPosition(gridPosition);
+
+    public bool IsValidGridPosition(GridPosition gridPosition) => gridSystem.IsValidGridPosition(gridPosition);
+
+    public int GetWidth() => gridSystem.GetWidth();
+
+    public int GetHeight() => gridSystem.GetHeight();
+
+    public bool HasAnyUnitOnGridPosition(GridPosition gridPosition)
+    {
+        GridObject gridObject = gridSystem.GetGridObject(gridPosition);
+        return gridObject.HasAnyUnit();
+    }
+
 }

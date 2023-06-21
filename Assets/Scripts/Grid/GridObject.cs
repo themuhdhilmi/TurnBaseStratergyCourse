@@ -2,18 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridObject 
+public class GridObject
 {
 
-    private GridPosition gridPosition;
     private GridSystem gridSystem;
+    private GridPosition gridPosition;
     private List<Unit> unitList;
 
-    public GridObject(GridSystem gridSystem , GridPosition gridPosition)
+    public GridObject(GridSystem gridSystem, GridPosition gridPosition)
     {
-        this.gridPosition = gridPosition;
         this.gridSystem = gridSystem;
+        this.gridPosition = gridPosition;
         unitList = new List<Unit>();
+    }
+
+    public override string ToString()
+    {
+        string unitString = "";
+        foreach (Unit unit in unitList)
+        {
+            unitString += unit + "\n";
+        }
+
+        return gridPosition.ToString() + "\n" + unitString;
     }
 
     public void AddUnit(Unit unit)
@@ -31,13 +42,9 @@ public class GridObject
         return unitList;
     }
 
-    public override string ToString()
+    public bool HasAnyUnit()
     {
-        string unitString = "";
-        foreach (var item in unitList)
-        {
-            unitString += item.ToString() + "\n";
-        }
-        return gridPosition.ToString() + "\n" + unitString;
+        return unitList.Count > 0;
     }
+
 }

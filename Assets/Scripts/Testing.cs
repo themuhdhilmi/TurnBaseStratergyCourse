@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class Testing : MonoBehaviour
 {
-    void Start()
-    {    
-    }
 
-    // Update is called once per frame
-    void Update()
+    [SerializeField] private Unit unit;
+
+    private void Start()
     {
     }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+        }
+    }
+
 }

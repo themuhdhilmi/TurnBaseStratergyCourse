@@ -17,18 +17,19 @@ public class UnitSelectedVisual : MonoBehaviour
 
     private void Start()
     {
-        UnitActionSystem.instance.OnSelectedUnitChange += UnitActionSystem_OnselectedUnitChange;
+        UnitActionSystem.Instance.OnSelectedUnitChanged += UnitActionSystem_OnSelectedUnitChanged;
+
         UpdateVisual();
     }
 
-    void UnitActionSystem_OnselectedUnitChange(object sender, EventArgs e)
+    private void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs empty)
     {
         UpdateVisual();
     }
 
     private void UpdateVisual()
     {
-        if (UnitActionSystem.instance.GetSelectedUnit().Equals(unit))
+        if (UnitActionSystem.Instance.GetSelectedUnit() == unit)
         {
             meshRenderer.enabled = true;
         }
