@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
 
-    private float timer;
+    [SerializeField] private float timer;
 
     private void Start()
     {
