@@ -1,14 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Unit : MonoBehaviour
 {
+    private const int ACTION_POINT_MAX = 2;
+
+    public static event EventHandler OnAnyActionPointsChanged;
+
+    [SerializeField] private bool isEnemy;
 
     private GridPosition gridPosition;
     private MoveAction moveAction;
     private SpinAction SpinAction;
     private BaseAction[] baseActionArray;
+    [SerializeField] private int actionPoints = ACTION_POINT_MAX;
 
     private void Awake()
     {
@@ -21,6 +29,8 @@ public class Unit : MonoBehaviour
     {
         gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
         LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
+
+        TurnSystem.Instance.OnTurnChanged += TurnSystem_OnTurnChanges;
     }
 
     private void Update()
@@ -54,5 +64,78 @@ public class Unit : MonoBehaviour
         return baseActionArray;
     }
 
+    public Vector3 GetWorldPosition()
+    {
+        return transform.position;
+    }
 
+    public bool TrySpendActionPointsToTakeAction(BaseAction baseAction)
+    {
+        if(CanSpendActionPointsToTakeActions(baseAction))
+        {
+            SpendActionPoints(baseAction.GetActionPointCost());
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool CanSpendActionPointsToTakeActions(BaseAction baseAction)
+    {
+        if(actionPoints >= baseAction.GetActionPointCost())
+        {
+            return true;
+        }
+
+        return false;   
+    }
+
+    private void SpendActionPoints(int amount)
+    {
+        actionPoints -= amount;
+
+        OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void TurnSystem_OnTurnChanges(object sender, System.EventArgs e)
+    {
+
+        if(IsEnemy())
+        {
+
+            if(!TurnSystem.Instance.IsPlayerTurn())
+            {
+                actionPoints = ACTION_POINT_MAX;
+                OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+            }
+
+        }
+
+        if (!IsEnemy())
+        {
+            Debug.Log("REPLENISH");
+            if (TurnSystem.Instance.IsPlayerTurn())
+            {
+                actionPoints = ACTION_POINT_MAX;
+                OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+            }
+
+        }
+
+    }
+
+    public int GetActionPoints()
+    {
+        return actionPoints;
+    }
+
+    public bool IsEnemy()
+    {
+        return isEnemy;
+    }
+
+    public void Damage()
+    {
+        Debug.Log(transform + " damaged!");
+    }
 }
